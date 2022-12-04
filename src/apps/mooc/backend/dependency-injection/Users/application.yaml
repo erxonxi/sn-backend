@@ -1,0 +1,34 @@
+services:
+  Mooc.Users.UserRepository:
+    class: ../../../../../Contexts/Mooc/Users/Infrastructure/MongoUserRepository
+    arguments: [ '@Mooc.Shared.ConnectionManager' ]
+
+  Mooc.Users.CreateUser:
+    class: ../../../../../Contexts/Mooc/Users/Application/Create/CreateUser
+    arguments: [ '@Mooc.Users.UserRepository', '@Mooc.Shared.Domain.EventBus', '@Shared.Crypt.HashEncrypt' ]
+
+  Mooc.Users.CreateUserCommandHandler:
+    class: ../../../../../Contexts/Mooc/Users/Application/Create/CreateUserCommandHandler
+    arguments: [ '@Mooc.Users.CreateUser' ]
+    tags:
+      - { name: 'commandHandler' }
+
+  Mooc.Users.SearchUsers:
+    class: ../../../../../Contexts/Mooc/Users/Application/Search/SearchUsers
+    arguments: [ '@Mooc.Users.UserRepository' ]
+
+  Mooc.Users.SearchUsersQueryHandler:
+    class: ../../../../../Contexts/Mooc/Users/Application/Search/SearchUsersQueryHandler
+    arguments: [ '@Mooc.Users.SearchUsers' ]
+    tags:
+      - { name: 'queryHandler' }
+
+  Mooc.Users.GetSession:
+    class: ../../../../../Contexts/Mooc/Users/Application/GetSession/GetSession
+    arguments: [ '@Mooc.Users.UserRepository', '@Shared.Crypt.HashEncrypt', '@Shared.Crypt.JwtEncrypt' ]
+
+  Mooc.Users.GetSessionQueryHandler:
+    class: ../../../../../Contexts/Mooc/Users/Application/GetSession/GetSessionQueryHandler
+    arguments: [ '@Mooc.Users.GetSession' ]
+    tags:
+      - { name: 'queryHandler' }

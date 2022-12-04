@@ -1,0 +1,64 @@
+services:
+  Posts.Shared.MongoConfig:
+    factory:
+      class: ../../../../../Contexts/Posts/Shared/Infrastructure/persistence/mongo/MongoConfigFactory
+      method: 'createConfig'
+
+  Posts.Shared.RabbitMQConfig:
+    factory:
+      class: ../../../../../Contexts/Posts/Shared/Infrastructure/RabbitMQ/RabbitMQConfigFactory
+      method: 'createConfig'
+
+  Posts.Shared.Domain.EventBus:
+    factory:
+      class: ../../../../../Contexts/Posts/Shared/Infrastructure/RabbitMQ/RabbitMQEventBusFactory
+      method: 'create'
+    arguments:
+      [
+        '@Posts.Shared.DomainEventFailoverPublisher',
+        '@Posts.Shared.RabbitMQConnection',
+        '@Posts.Shared.RabbitMQqueueFormatter',
+        '@Posts.Shared.RabbitMQConfig'
+      ]
+
+  Posts.Shared.ConnectionManager:
+    factory:
+      class: ../../../../../Contexts/Shared/Infrastructure/persistence/mongo/MongoClientFactory
+      method: 'createClient'
+    arguments: ['posts', '@Posts.Shared.MongoConfig']
+
+  Posts.Shared.RabbitMQQueueFormatter:
+    class: ../../../../../Contexts/Shared/Infrastructure/EventBus/RabbitMQ/RabbitMQqueueFormatter
+    arguments: ['posts']
+
+  Posts.Shared.RabbitMQConnection:
+    class: ../../../../../Contexts/Shared/Infrastructure/EventBus/RabbitMQ/RabbitMqConnection
+    arguments: ['@Posts.Shared.RabbitMQConfig']
+
+  Posts.Shared.RabbitMQqueueFormatter:
+    class: ../../../../../Contexts/Shared/Infrastructure/EventBus/RabbitMQ/RabbitMQqueueFormatter
+    arguments: ['posts']
+
+  Posts.Shared.RabbitMQConfigurer:
+    class: ../../../../../Contexts/Shared/Infrastructure/EventBus/RabbitMQ/RabbitMQConfigurer
+    arguments: ['@Posts.Shared.RabbitMQConnection', '@Posts.Shared.RabbitMQQueueFormatter']
+
+  Posts.Shared.DomainEventFailoverPublisher:
+    class: ../../../../../Contexts/Shared/Infrastructure/EventBus/DomainEventFailoverPublisher/DomainEventFailoverPublisher
+    arguments: ['@Posts.Shared.ConnectionManager']
+
+  Posts.Shared.CommandHandlers:
+    class: ../../../../../Contexts/Shared/Infrastructure/CommandBus/CommandHandlers
+    arguments: ['!tagged commandHandler']
+
+  Posts.Shared.Domain.CommandBus:
+    class: ../../../../../Contexts/Shared/Infrastructure/CommandBus/InMemoryCommandBus
+    arguments: ['@Posts.Shared.CommandHandlers']
+
+  Posts.Shared.QueryHandlers:
+    class: ../../../../../Contexts/Shared/Infrastructure/QueryBus/QueryHandlers
+    arguments: ['!tagged queryHandler']
+
+  Posts.Shared.Domain.QueryBus:
+    class: ../../../../../Contexts/Shared/Infrastructure/QueryBus/InMemoryQueryBus
+    arguments: ['@Posts.Shared.QueryHandlers']

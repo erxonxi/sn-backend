@@ -1,0 +1,216 @@
+{
+	"components": {
+		"examples": {},
+		"headers": {},
+		"parameters": {},
+		"requestBodies": {},
+		"responses": {},
+		"schemas": {
+			"FeedId": {
+				"properties": {
+					"value": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"value"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"UserId": {
+				"properties": {
+					"value": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"value"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"PostId": {
+				"properties": {
+					"value": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"value"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"PostProfileName": {
+				"properties": {
+					"value": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"value"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"PostMessage": {
+				"properties": {
+					"value": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"value"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"Post": {
+				"properties": {
+					"id": {
+						"$ref": "#/components/schemas/PostId"
+					},
+					"userId": {
+						"$ref": "#/components/schemas/UserId"
+					},
+					"profileName": {
+						"$ref": "#/components/schemas/PostProfileName"
+					},
+					"message": {
+						"$ref": "#/components/schemas/PostMessage"
+					},
+					"createdAt": {
+						"type": "string",
+						"format": "date-time"
+					}
+				},
+				"required": [
+					"id",
+					"userId",
+					"profileName",
+					"message",
+					"createdAt"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"ValueObjectValue_Properties_Feed__": {
+				"properties": {
+					"id": {
+						"$ref": "#/components/schemas/FeedId"
+					},
+					"userId": {
+						"$ref": "#/components/schemas/UserId"
+					},
+					"feed": {
+						"items": {
+							"$ref": "#/components/schemas/Post"
+						},
+						"type": "array"
+					}
+				},
+				"required": [
+					"id",
+					"userId",
+					"feed"
+				],
+				"type": "object"
+			},
+			"Primitives_Feed_": {
+				"$ref": "#/components/schemas/ValueObjectValue_Properties_Feed__"
+			},
+			"ErrorMessage": {
+				"properties": {
+					"message": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"message"
+				],
+				"type": "object",
+				"additionalProperties": false
+			}
+		},
+		"securitySchemes": {
+			"jwt": {
+				"type": "http",
+				"name": "jwt",
+				"scheme": "bearer",
+				"bearerFormat": "JWT",
+				"in": "header"
+			}
+		}
+	},
+	"info": {
+		"title": "socialnetwork-backend",
+		"version": "1.0.0",
+		"license": {
+			"name": "MIT"
+		},
+		"contact": {}
+	},
+	"openapi": "3.0.0",
+	"paths": {
+		"/v1/feeds": {
+			"get": {
+				"operationId": "GetFeeds",
+				"responses": {
+					"200": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/Primitives_Feed_"
+									},
+									"type": "array"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Invalid parameters",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorMessage"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Feeds"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": []
+			}
+		},
+		"/v1/status": {
+			"get": {
+				"operationId": "Run",
+				"responses": {
+					"200": {
+						"description": "Status ok"
+					}
+				},
+				"tags": [
+					"Status"
+				],
+				"security": [],
+				"parameters": []
+			}
+		}
+	},
+	"servers": [
+		{
+			"url": "/"
+		}
+	]
+}

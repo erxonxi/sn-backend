@@ -1,0 +1,52 @@
+services:
+  Profiles.Profiles.ProfilesRepository:
+    class: ../../../../../Contexts/Profiles/Profiles/Infrastructure/MongoProfilesRepository
+    arguments: ['@Profiles.Shared.ConnectionManager']
+
+  Profiles.Profiles.GetProfile:
+    class: ../../../../../Contexts/Profiles/Profiles/Application/GetProfile/GetProfile
+    arguments: ['@Profiles.Profiles.ProfilesRepository']
+
+  Profiles.Profiles.GetProfileQueryHandler:
+    class: ../../../../../Contexts/Profiles/Profiles/Application/GetProfile/GetProfileQueryHandler
+    arguments: ['@Profiles.Profiles.GetProfile']
+    tags:
+      - { name: 'queryHandler' }
+
+  Profiles.Profiles.CreateProfile:
+    class: ../../../../../Contexts/Profiles/Profiles/Application/Create/CreateProfile
+    arguments: ['@Profiles.Profiles.ProfilesRepository', '@Profiles.Shared.Domain.EventBus']
+
+  Profiles.Profiles.CreateProfileOnUserCreated:
+    class: ../../../../../Contexts/Profiles/Profiles/Application/Create/CreateProfileOnUserCreated
+    arguments: ['@Profiles.Profiles.CreateProfile']
+    tags:
+      - { name: 'domainEventSubscriber' }
+
+  Profiles.Profiles.IncrementFollower:
+    class: ../../../../../Contexts/Profiles/Profiles/Application/IncrementFollowerAndFolloweds/IncrementFollower
+    arguments: ['@Profiles.Profiles.ProfilesRepository', '@Profiles.Profiles.GetProfile']
+
+  Profiles.Profiles.IncrementFollowed:
+    class: ../../../../../Contexts/Profiles/Profiles/Application/IncrementFollowerAndFolloweds/IncrementFollowed
+    arguments: ['@Profiles.Profiles.ProfilesRepository', '@Profiles.Profiles.GetProfile']
+
+  Profiles.Profiles.IncrementFollowerAndFollowedOnFollowerCreated:
+    class: ../../../../../Contexts/Profiles/Profiles/Application/IncrementFollowerAndFolloweds/IncrementFollowerAndFollowedOnFollowerCreated
+    arguments: ['@Profiles.Profiles.IncrementFollower', '@Profiles.Profiles.IncrementFollowed']
+    tags:
+      - { name: 'domainEventSubscriber' }
+
+  Profiles.Profiles.DecrementFollower:
+    class: ../../../../../Contexts/Profiles/Profiles/Application/DecrementFollowerAndFolloweds/DecrementFollower
+    arguments: ['@Profiles.Profiles.ProfilesRepository', '@Profiles.Profiles.GetProfile']
+
+  Profiles.Profiles.DecrementFollowed:
+    class: ../../../../../Contexts/Profiles/Profiles/Application/DecrementFollowerAndFolloweds/DecrementFollowed
+    arguments: ['@Profiles.Profiles.ProfilesRepository', '@Profiles.Profiles.GetProfile']
+
+  Profiles.Profiles.DecrementFollowerAndFollowedOnFollowerCreated:
+    class: ../../../../../Contexts/Profiles/Profiles/Application/DecrementFollowerAndFolloweds/DecrementFollowerAndFollowedOnFollowerCreated
+    arguments: ['@Profiles.Profiles.DecrementFollower', '@Profiles.Profiles.DecrementFollowed']
+    tags:
+      - { name: 'domainEventSubscriber' }

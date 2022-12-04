@@ -1,0 +1,22 @@
+{
+  "entryFile": "src/apps/followers/backend/start.ts",
+  "noImplicitAdditionalProperties": "throw-on-extras",
+  "controllerPathGlobs": ["src/apps/followers/backend/**/*Controller.ts"],
+  "spec": {
+    "securityDefinitions": {
+      "jwt": {
+        "type": "http",
+        "name": "jwt",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "in": "header"
+      }
+    },
+    "outputDirectory": "src/apps/followers/backend",
+    "specVersion": 3
+  },
+  "routes": {
+    "authenticationModule": "src/apps/mooc/backend/routes/auth.ts",
+    "routesDir": "src/apps/followers/backend/routes"
+  }
+}

@@ -1,0 +1,72 @@
+version: '3.8'
+
+x-app-service: &default-app
+  build: .
+  command: ''
+  environment:
+    - NODE_ENV=production
+    - MONGO_URL=mongodb://mongo:27017/mooc-backend
+    - JWT_SECRET=bea1e719c22341c09d43fdef68d420495a060670c00a4c8099d542c0391035f1
+    - RABBITMQ_HOSTNAME=rabbitmq
+  depends_on:
+    - mongo
+    - kibana
+    - elasticsearch
+  networks:
+      - mooc_net
+
+services:
+  app:
+    <<: *default-app
+  mooc-backend:
+    <<: *default-app
+    command: yarn build:ci
+    volumes:
+      - .:/code:delegated
+      - ./node_modules:/code/node_modules:delegated
+    ports:
+      - 5001:5001
+  mongo:
+    image: mongo:5.0.0
+    environment:
+      - MONGO_URL=mongodb://mongo:27017/dev
+    volumes:
+      - ./data/mongo:/data/db:delegated
+    networks:
+        - mooc_net
+  rabbitmq:
+    image: 'rabbitmq:3.8-management'
+    networks:
+      - mooc_net
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.9.3
+    container_name: codely-elasticsearch
+    environment:
+      - node.name=codely-elasticsearch
+      - discovery.type=single-node #Elasticsearch forms a single-node cluster
+      - bootstrap.memory_lock=true # might cause the JVM or shell session to exit if it tries to allocate more memory than is available!
+      - 'ES_JAVA_OPTS=-Xms2048m -Xmx2048m'
+    ulimits:
+      memlock:
+        soft: -1 # The memlock soft and hard values configures the range of memory that ElasticSearch will use. Setting this to –1 means unlimited.
+        hard: -1
+    volumes:
+      - esdata:/usr/share/elasticsearch/data
+    networks:
+        - mooc_net
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.8.1
+    container_name: codely-kibana
+    environment:
+      ELASTICSEARCH_URL: http://codely-elasticsearch:9200
+      ELASTICSEARCH_HOSTS: http://codely-elasticsearch:9200
+    networks:
+      - mooc_net
+
+volumes:
+  node_modules:
+  esdata:
+    driver: local
+
+networks:
+  mooc_net:

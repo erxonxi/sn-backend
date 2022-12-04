@@ -1,0 +1,72 @@
+services:
+  Profiles.Shared.MongoConfig:
+    factory:
+      class: ../../../../../Contexts/Profiles/Shared/Infrastructure/persistence/mongo/MongoConfigFactory
+      method: 'createConfig'
+
+  Profiles.Shared.RabbitMQConfig:
+    factory:
+      class: ../../../../../Contexts/Profiles/Shared/Infrastructure/RabbitMQ/RabbitMQConfigFactory
+      method: 'createConfig'
+
+  Profiles.Shared.Domain.EventBus:
+    factory:
+      class: ../../../../../Contexts/Profiles/Shared/Infrastructure/RabbitMQ/RabbitMQEventBusFactory
+      method: 'create'
+    arguments:
+      [
+        '@Profiles.Shared.DomainEventFailoverPublisher',
+        '@Profiles.Shared.RabbitMQConnection',
+        '@Profiles.Shared.RabbitMQqueueFormatter',
+        '@Profiles.Shared.RabbitMQConfig'
+      ]
+
+  Profiles.Shared.ConnectionManager:
+    factory:
+      class: ../../../../../Contexts/Shared/Infrastructure/persistence/mongo/MongoClientFactory
+      method: 'createClient'
+    arguments: ['profiles', '@Profiles.Shared.MongoConfig']
+
+  Profiles.Shared.RabbitMQQueueFormatter:
+    class: ../../../../../Contexts/Shared/Infrastructure/EventBus/RabbitMQ/RabbitMQqueueFormatter
+    arguments: ['profiles']
+
+  Profiles.Shared.RabbitMQConnection:
+    class: ../../../../../Contexts/Shared/Infrastructure/EventBus/RabbitMQ/RabbitMqConnection
+    arguments: ['@Profiles.Shared.RabbitMQConfig']
+
+  Profiles.Shared.RabbitMQqueueFormatter:
+    class: ../../../../../Contexts/Shared/Infrastructure/EventBus/RabbitMQ/RabbitMQqueueFormatter
+    arguments: ['profiles']
+
+  Profiles.Shared.RabbitMQConfigurer:
+    class: ../../../../../Contexts/Shared/Infrastructure/EventBus/RabbitMQ/RabbitMQConfigurer
+    arguments: ['@Profiles.Shared.RabbitMQConnection', '@Profiles.Shared.RabbitMQQueueFormatter']
+
+  Profiles.Shared.DomainEventFailoverPublisher:
+    class: ../../../../../Contexts/Shared/Infrastructure/EventBus/DomainEventFailoverPublisher/DomainEventFailoverPublisher
+    arguments: ['@Profiles.Shared.ConnectionManager']
+
+  Profiles.Shared.CommandHandlers:
+    class: ../../../../../Contexts/Shared/Infrastructure/CommandBus/CommandHandlers
+    arguments: ['!tagged commandHandler']
+
+  Profiles.Shared.Domain.CommandBus:
+    class: ../../../../../Contexts/Shared/Infrastructure/CommandBus/InMemoryCommandBus
+    arguments: ['@Profiles.Shared.CommandHandlers']
+
+  Profiles.Shared.QueryHandlers:
+    class: ../../../../../Contexts/Shared/Infrastructure/QueryBus/QueryHandlers
+    arguments: ['!tagged queryHandler']
+
+  Profiles.Shared.Domain.QueryBus:
+    class: ../../../../../Contexts/Shared/Infrastructure/QueryBus/InMemoryQueryBus
+    arguments: ['@Profiles.Shared.QueryHandlers']
+
+  Profiles.Shared.FollowersService:
+    class: ../../../../../Contexts/Profiles/Profiles/Infrastructure/FollowersServiceApi
+    arguments: []
+
+  Profiles.Shared.PostsService:
+    class: ../../../../../Contexts/Profiles/Profiles/Infrastructure/PostsServiceApi
+    arguments: []

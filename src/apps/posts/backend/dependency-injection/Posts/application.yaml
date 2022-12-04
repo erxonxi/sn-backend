@@ -1,0 +1,24 @@
+services:
+  Posts.Posts.PostsRepository:
+    class: ../../../../../Contexts/Posts/Posts/Infrastructure/MongoPostsRepository
+    arguments: ['@Posts.Shared.ConnectionManager']
+
+  Posts.Posts.CreatePost:
+    class: ../../../../../Contexts/Posts/Posts/Application/Create/CreatePost
+    arguments: ['@Posts.Posts.PostsRepository', '@Posts.Shared.Domain.EventBus']
+
+  Posts.Posts.CreatePostCommandHandler:
+    class: ../../../../../Contexts/Posts/Posts/Application/Create/CreatePostCommandHandler
+    arguments: ['@Posts.Posts.CreatePost']
+    tags:
+      - { name: 'commandHandler' }
+
+  Posts.Posts.GetUserPosts:
+    class: ../../../../../Contexts/Posts/Posts/Application/UserPosts/GetUserPosts
+    arguments: ['@Posts.Posts.PostsRepository']
+
+  Posts.Posts.GetUserPostsQueryHandler:
+    class: ../../../../../Contexts/Posts/Posts/Application/UserPosts/GetUserPostsQueryHandler
+    arguments: ['@Posts.Posts.GetUserPosts']
+    tags:
+      - { name: 'queryHandler' }

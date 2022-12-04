@@ -1,0 +1,183 @@
+{
+	"components": {
+		"examples": {},
+		"headers": {},
+		"parameters": {},
+		"requestBodies": {},
+		"responses": {},
+		"schemas": {
+			"ProfileId": {
+				"properties": {
+					"value": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"value"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"UserId": {
+				"properties": {
+					"value": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"value"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"ProfileName": {
+				"properties": {
+					"value": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"value"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"ProfileCount": {
+				"properties": {
+					"value": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"value"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"ValueObjectValue_Properties_Profile__": {
+				"properties": {
+					"id": {
+						"$ref": "#/components/schemas/ProfileId"
+					},
+					"userId": {
+						"$ref": "#/components/schemas/UserId"
+					},
+					"name": {
+						"$ref": "#/components/schemas/ProfileName"
+					},
+					"followers": {
+						"$ref": "#/components/schemas/ProfileCount"
+					},
+					"followeds": {
+						"$ref": "#/components/schemas/ProfileCount"
+					}
+				},
+				"required": [
+					"id",
+					"userId",
+					"name",
+					"followers",
+					"followeds"
+				],
+				"type": "object"
+			},
+			"Primitives_Profile_": {
+				"$ref": "#/components/schemas/ValueObjectValue_Properties_Profile__"
+			},
+			"ErrorMessage": {
+				"properties": {
+					"message": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"message"
+				],
+				"type": "object",
+				"additionalProperties": false
+			}
+		},
+		"securitySchemes": {
+			"jwt": {
+				"type": "http",
+				"name": "jwt",
+				"scheme": "bearer",
+				"bearerFormat": "JWT",
+				"in": "header"
+			}
+		}
+	},
+	"info": {
+		"title": "socialnetwork-backend",
+		"version": "1.0.0",
+		"license": {
+			"name": "MIT"
+		},
+		"contact": {}
+	},
+	"openapi": "3.0.0",
+	"paths": {
+		"/v1/profiles/users/{id}": {
+			"get": {
+				"operationId": "GetProfile",
+				"responses": {
+					"200": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Primitives_Profile_"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Invalid parameters",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorMessage"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Profiles"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/v1/status": {
+			"get": {
+				"operationId": "Run",
+				"responses": {
+					"200": {
+						"description": "Status ok"
+					}
+				},
+				"tags": [
+					"Status"
+				],
+				"security": [],
+				"parameters": []
+			}
+		}
+	},
+	"servers": [
+		{
+			"url": "/"
+		}
+	]
+}

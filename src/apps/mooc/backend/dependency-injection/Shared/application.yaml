@@ -1,0 +1,76 @@
+services:
+  Mooc.Shared.MongoConfig:
+    factory:
+      class: ../../../../../Contexts/Mooc/Shared/Infrastructure/persistence/mongo/MongoConfigFactory
+      method: 'createConfig'
+
+  Mooc.Shared.RabbitMQConfig:
+    factory:
+      class: ../../../../../Contexts/Mooc/Shared/Infrastructure/RabbitMQ/RabbitMQConfigFactory
+      method: 'createConfig'
+
+  Mooc.Shared.Domain.EventBus:
+    factory:
+      class: ../../../../../Contexts/Mooc/Shared/Infrastructure/RabbitMQ/RabbitMQEventBusFactory
+      method: 'create'
+    arguments:
+      [
+        '@Mooc.Shared.DomainEventFailoverPublisher',
+        '@Mooc.Shared.RabbitMQConnection',
+        '@Mooc.Shared.RabbitMQqueueFormatter',
+        '@Mooc.Shared.RabbitMQConfig'
+      ]
+
+  Mooc.Shared.ConnectionManager:
+    factory:
+      class: ../../../../../Contexts/Shared/Infrastructure/persistence/mongo/MongoClientFactory
+      method: 'createClient'
+    arguments: ['mooc', '@Mooc.Shared.MongoConfig']
+
+  Mooc.Shared.RabbitMQQueueFormatter:
+    class: ../../../../../Contexts/Shared/Infrastructure/EventBus/RabbitMQ/RabbitMQqueueFormatter
+    arguments: ['mooc']
+
+  Mooc.Shared.RabbitMQConnection:
+    class: ../../../../../Contexts/Shared/Infrastructure/EventBus/RabbitMQ/RabbitMqConnection
+    arguments: ['@Mooc.Shared.RabbitMQConfig']
+
+  Mooc.Shared.RabbitMQqueueFormatter:
+    class: ../../../../../Contexts/Shared/Infrastructure/EventBus/RabbitMQ/RabbitMQqueueFormatter
+    arguments: ['mooc']
+
+  Mooc.Shared.RabbitMQConfigurer:
+    class: ../../../../../Contexts/Shared/Infrastructure/EventBus/RabbitMQ/RabbitMQConfigurer
+    arguments: ['@Mooc.Shared.RabbitMQConnection', '@Mooc.Shared.RabbitMQQueueFormatter']
+
+  Mooc.Shared.DomainEventFailoverPublisher:
+    class: ../../../../../Contexts/Shared/Infrastructure/EventBus/DomainEventFailoverPublisher/DomainEventFailoverPublisher
+    arguments: ['@Mooc.Shared.ConnectionManager']
+
+  Mooc.Shared.CommandHandlers:
+    class: ../../../../../Contexts/Shared/Infrastructure/CommandBus/CommandHandlers
+    arguments: ['!tagged commandHandler']
+
+  Mooc.Shared.Domain.CommandBus:
+    class: ../../../../../Contexts/Shared/Infrastructure/CommandBus/InMemoryCommandBus
+    arguments: ['@Mooc.Shared.CommandHandlers']
+
+  Mooc.Shared.QueryHandlers:
+    class: ../../../../../Contexts/Shared/Infrastructure/QueryBus/QueryHandlers
+    arguments: ['!tagged queryHandler']
+
+  Mooc.Shared.Domain.QueryBus:
+    class: ../../../../../Contexts/Shared/Infrastructure/QueryBus/InMemoryQueryBus
+    arguments: ['@Mooc.Shared.QueryHandlers']
+
+  Shared.Crypt.HashEncrypt:
+    class: ../../../../../Contexts/Shared/Infrastructure/Encrypt/HashEncrypt
+
+  Mooc.Shared.Crypt.JwtConfig:
+    factory:
+      class: ../../../../../Contexts/Mooc/Shared/Infrastructure/Encrypt/JwtConfigFactory
+      method: 'createConfig'
+
+  Shared.Crypt.JwtEncrypt:
+    class: ../../../../../Contexts/Shared/Infrastructure/Encrypt/JwtEncrypt
+    arguments: ['@Mooc.Shared.Crypt.JwtConfig']

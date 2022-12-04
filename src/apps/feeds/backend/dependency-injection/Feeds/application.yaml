@@ -1,0 +1,45 @@
+services:
+  Feeds.Feeds.FeedsRepository:
+    class: ../../../../../Contexts/Feeds/Feeds/Infrastructure/MongoFeedsRepository
+    arguments: ['@Feeds.Shared.ConnectionManager']
+
+  Feeds.Feeds.InsertPost:
+    class: ../../../../../Contexts/Feeds/Feeds/Application/InsertPost/InsertPost
+    arguments:
+      [
+        '@Feeds.Feeds.FeedsRepository',
+        '@Feeds.Shared.Domain.EventBus',
+        '@Feeds.Shared.FollowersService'
+      ]
+
+  Feeds.Feeds.InsertPostOnPostCreated:
+    class: ../../../../../Contexts/Feeds/Feeds/Application/InsertPost/InsertPostOnPostCreated
+    arguments: ['@Feeds.Feeds.InsertPost']
+    tags:
+      - { name: 'domainEventSubscriber' }
+
+  Feeds.Feeds.GetFeed:
+    class: ../../../../../Contexts/Feeds/Feeds/Application/GetFeed/GetFeed
+    arguments: ['@Feeds.Feeds.FeedsRepository']
+
+  Feeds.Feeds.GetFeedQueryHandler:
+    class: ../../../../../Contexts/Feeds/Feeds/Application/GetFeed/GetFeedQueryHandler
+    arguments: ['@Feeds.Feeds.GetFeed']
+    tags:
+      - { name: 'queryHandler' }
+
+  Feeds.Feeds.InsertPosts:
+    class: ../../../../../Contexts/Feeds/Feeds/Application/InsertPosts/InsertPosts
+    arguments:
+      [
+        '@Feeds.Feeds.FeedsRepository',
+        '@Feeds.Feeds.GetFeed',
+        '@Feeds.Shared.PostsService',
+        '@Feeds.Shared.Domain.EventBus'
+      ]
+
+  Feeds.Feeds.InsertPostsOnFollow:
+    class: ../../../../../Contexts/Feeds/Feeds/Application/InsertPosts/InsertPostsOnFollow
+    arguments: ['@Feeds.Feeds.InsertPosts']
+    tags:
+      - { name: 'domainEventSubscriber' }

@@ -1,0 +1,297 @@
+{
+	"components": {
+		"examples": {},
+		"headers": {},
+		"parameters": {},
+		"requestBodies": {},
+		"responses": {},
+		"schemas": {
+			"ErrorMessage": {
+				"properties": {
+					"message": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"message"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"FollowBody": {
+				"properties": {
+					"toFollowUserId": {
+						"type": "string"
+					},
+					"id": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"toFollowUserId",
+					"id"
+				],
+				"type": "object"
+			},
+			"UnfollowBody": {
+				"properties": {
+					"toUnfollowUserId": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"toUnfollowUserId"
+				],
+				"type": "object"
+			},
+			"FollowerId": {
+				"properties": {
+					"value": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"value"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"UserId": {
+				"properties": {
+					"value": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"value"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"ValueObjectValue_Properties_Follower__": {
+				"properties": {
+					"id": {
+						"$ref": "#/components/schemas/FollowerId"
+					},
+					"userId": {
+						"$ref": "#/components/schemas/UserId"
+					},
+					"followerUserId": {
+						"$ref": "#/components/schemas/UserId"
+					}
+				},
+				"required": [
+					"id",
+					"userId",
+					"followerUserId"
+				],
+				"type": "object"
+			},
+			"Primitives_Follower_": {
+				"$ref": "#/components/schemas/ValueObjectValue_Properties_Follower__"
+			}
+		},
+		"securitySchemes": {
+			"jwt": {
+				"type": "http",
+				"name": "jwt",
+				"scheme": "bearer",
+				"bearerFormat": "JWT",
+				"in": "header"
+			}
+		}
+	},
+	"info": {
+		"title": "socialnetwork-backend",
+		"version": "1.0.0",
+		"license": {
+			"name": "MIT"
+		},
+		"contact": {}
+	},
+	"openapi": "3.0.0",
+	"paths": {
+		"/v1/followers": {
+			"put": {
+				"operationId": "Follow",
+				"responses": {
+					"201": {
+						"description": "Created"
+					},
+					"404": {
+						"description": "Invalid user parameters",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorMessage"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Followers"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/FollowBody"
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"operationId": "Unfollow",
+				"responses": {
+					"201": {
+						"description": "Deleted"
+					},
+					"404": {
+						"description": "Invalid parameters",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorMessage"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Followers"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/UnfollowBody"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/v1/followers/users/{userId}": {
+			"get": {
+				"operationId": "GetFollowers",
+				"responses": {
+					"200": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/Primitives_Follower_"
+									},
+									"type": "array"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Invalid parameters",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorMessage"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Followers"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "userId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/v1/followers/users/{userId}/count": {
+			"get": {
+				"operationId": "GetFollowersCount",
+				"responses": {
+					"200": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "number",
+									"format": "double"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Invalid parameters",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorMessage"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Followers"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "userId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/v1/status": {
+			"get": {
+				"operationId": "Run",
+				"responses": {
+					"200": {
+						"description": "Status ok"
+					}
+				},
+				"tags": [
+					"Status"
+				],
+				"security": [],
+				"parameters": []
+			}
+		}
+	},
+	"servers": [
+		{
+			"url": "/"
+		}
+	]
+}

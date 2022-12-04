@@ -1,0 +1,72 @@
+services:
+  Feeds.Shared.MongoConfig:
+    factory:
+      class: ../../../../../Contexts/Feeds/Shared/Infrastructure/persistence/mongo/MongoConfigFactory
+      method: 'createConfig'
+
+  Feeds.Shared.RabbitMQConfig:
+    factory:
+      class: ../../../../../Contexts/Feeds/Shared/Infrastructure/RabbitMQ/RabbitMQConfigFactory
+      method: 'createConfig'
+
+  Feeds.Shared.Domain.EventBus:
+    factory:
+      class: ../../../../../Contexts/Feeds/Shared/Infrastructure/RabbitMQ/RabbitMQEventBusFactory
+      method: 'create'
+    arguments:
+      [
+        '@Feeds.Shared.DomainEventFailoverPublisher',
+        '@Feeds.Shared.RabbitMQConnection',
+        '@Feeds.Shared.RabbitMQqueueFormatter',
+        '@Feeds.Shared.RabbitMQConfig'
+      ]
+
+  Feeds.Shared.ConnectionManager:
+    factory:
+      class: ../../../../../Contexts/Shared/Infrastructure/persistence/mongo/MongoClientFactory
+      method: 'createClient'
+    arguments: ['feeds', '@Feeds.Shared.MongoConfig']
+
+  Feeds.Shared.RabbitMQQueueFormatter:
+    class: ../../../../../Contexts/Shared/Infrastructure/EventBus/RabbitMQ/RabbitMQqueueFormatter
+    arguments: ['feeds']
+
+  Feeds.Shared.RabbitMQConnection:
+    class: ../../../../../Contexts/Shared/Infrastructure/EventBus/RabbitMQ/RabbitMqConnection
+    arguments: ['@Feeds.Shared.RabbitMQConfig']
+
+  Feeds.Shared.RabbitMQqueueFormatter:
+    class: ../../../../../Contexts/Shared/Infrastructure/EventBus/RabbitMQ/RabbitMQqueueFormatter
+    arguments: ['feeds']
+
+  Feeds.Shared.RabbitMQConfigurer:
+    class: ../../../../../Contexts/Shared/Infrastructure/EventBus/RabbitMQ/RabbitMQConfigurer
+    arguments: ['@Feeds.Shared.RabbitMQConnection', '@Feeds.Shared.RabbitMQQueueFormatter']
+
+  Feeds.Shared.DomainEventFailoverPublisher:
+    class: ../../../../../Contexts/Shared/Infrastructure/EventBus/DomainEventFailoverPublisher/DomainEventFailoverPublisher
+    arguments: ['@Feeds.Shared.ConnectionManager']
+
+  Feeds.Shared.CommandHandlers:
+    class: ../../../../../Contexts/Shared/Infrastructure/CommandBus/CommandHandlers
+    arguments: ['!tagged commandHandler']
+
+  Feeds.Shared.Domain.CommandBus:
+    class: ../../../../../Contexts/Shared/Infrastructure/CommandBus/InMemoryCommandBus
+    arguments: ['@Feeds.Shared.CommandHandlers']
+
+  Feeds.Shared.QueryHandlers:
+    class: ../../../../../Contexts/Shared/Infrastructure/QueryBus/QueryHandlers
+    arguments: ['!tagged queryHandler']
+
+  Feeds.Shared.Domain.QueryBus:
+    class: ../../../../../Contexts/Shared/Infrastructure/QueryBus/InMemoryQueryBus
+    arguments: ['@Feeds.Shared.QueryHandlers']
+
+  Feeds.Shared.FollowersService:
+    class: ../../../../../Contexts/Feeds/Feeds/Infrastructure/FollowersServiceApi
+    arguments: []
+
+  Feeds.Shared.PostsService:
+    class: ../../../../../Contexts/Feeds/Feeds/Infrastructure/PostsServiceApi
+    arguments: []

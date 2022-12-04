@@ -1,0 +1,43 @@
+services:
+  Followers.Followers.FollowersRepository:
+    class: ../../../../../Contexts/Followers/Followers/Infrastructure/MongoFollowersRepository
+    arguments: ['@Followers.Shared.ConnectionManager']
+
+  Followers.Followers.MoocService:
+    class: ../../../../../Contexts/Followers/Followers/Infrastructure/MoocServiceApi
+    arguments: []
+
+  Followers.Followers.Follow:
+    class: ../../../../../Contexts/Followers/Followers/Application/Follow/Follow
+    arguments:
+      [
+        '@Followers.Followers.FollowersRepository',
+        '@Followers.Shared.Domain.EventBus',
+        '@Followers.Followers.MoocService'
+      ]
+
+  Followers.Followers.FollowCommandHandler:
+    class: ../../../../../Contexts/Followers/Followers/Application/Follow/FollowCommandHandler
+    arguments: ['@Followers.Followers.Follow']
+    tags:
+      - { name: 'commandHandler' }
+
+  Followers.Followers.Unfollow:
+    class: ../../../../../Contexts/Followers/Followers/Application/Unfollow/Unfollow
+    arguments: ['@Followers.Followers.FollowersRepository', '@Followers.Shared.Domain.EventBus']
+
+  Followers.Followers.UnfollowCommandHandler:
+    class: ../../../../../Contexts/Followers/Followers/Application/Unfollow/UnfollowCommandHandler
+    arguments: ['@Followers.Followers.Unfollow']
+    tags:
+      - { name: 'commandHandler' }
+
+  Followers.Followers.GetFollowersOfUser:
+    class: ../../../../../Contexts/Followers/Followers/Application/FollowersOfUser/GetFollowersOfUser
+    arguments: ['@Followers.Followers.FollowersRepository']
+
+  Followers.Followers.GetFollowersOfUserQueryHandler:
+    class: ../../../../../Contexts/Followers/Followers/Application/FollowersOfUser/GetFollowersOfUserQueryHandler
+    arguments: ['@Followers.Followers.GetFollowersOfUser']
+    tags:
+      - { name: 'queryHandler' }

@@ -41,3 +41,7 @@ start_production:
 # Restart mooc backend
 restart_mooc_backend:
 	docker compose -f docker-compose.prod.yml restart mooc-backend
+
+# Restart mooc backend
+dev_services:
+	docker compose up --build mooc-backend mooc-followers mooc-posts mooc-feeds mooc-profiles

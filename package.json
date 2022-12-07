@@ -58,7 +58,8 @@
     "command:followers:rabbitmq": "NODE_ENV=production ts-node src/apps/followers/backend/command/runConfigureRabbitMQCommand",
     "command:posts:rabbitmq": "NODE_ENV=production ts-node src/apps/posts/backend/command/runConfigureRabbitMQCommand",
     "command:feeds:rabbitmq": "NODE_ENV=production ts-node src/apps/feeds/backend/command/runConfigureRabbitMQCommand",
-    "command:profiles:rabbitmq": "NODE_ENV=production ts-node src/apps/profiles/backend/command/runConfigureRabbitMQCommand"
+    "command:profiles:rabbitmq": "NODE_ENV=production ts-node src/apps/profiles/backend/command/runConfigureRabbitMQCommand",
+    "command:all:rabbitmq": "command:mooc:rabbitmq && yarn command:followers:rabbitmq && yarn command:posts:rabbitmq && yarn command:feeds:rabbitmq && yarn command:profiles:rabbitmq"
   },
   "dependencies": {
     "@elastic/elasticsearch": "^7.11.0",

@@ -2,7 +2,7 @@ import * as express from 'express';
 import { IUserSession } from '../../../../Contexts/Mooc/Users/Domain/UserSession';
 
 export interface AthenticatedRequest extends express.Request {
-  user: IUserSession
+  user: IUserSession;
 }
 
 export type SessionType = {

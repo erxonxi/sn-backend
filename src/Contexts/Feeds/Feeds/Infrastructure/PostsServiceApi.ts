@@ -7,7 +7,7 @@ export class PostsServiceApi implements PostsService {
   async getUserPosts(id: UserId): Promise<Post[]> {
     const URL = feedsConfig.get('posts_service.url');
     const response = await fetch(`${URL}/v1/posts/users/${id.toString()}`);
-    
+
     if (!response.ok) {
       throw new Error('PostsServiceApi error fetching data');
     }
